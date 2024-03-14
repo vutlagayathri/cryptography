@@ -1,0 +1,117 @@
+#include <stdio.h>
+#include <string.h>
+#include <ctype.h>
+
+#define MATRIX_SIZE 5
+ 
+void generatePlayfairMatrix(char *key, char matrix[MATRIX_SIZE][MATRIX_SIZE]) {
+    int i, j, k;
+    char *ptr = key;
+    char alphabet[26] = "ABCDEFGHIKLMNOPQRSTUVWXYZ";
+    while (*ptr) {
+        if (*ptr == ' ') {
+            strcpy(ptr, ptr + 1);
+        } else {
+            *ptr = toupper(*ptr);
+            ptr++;
+        }
+    }  
+    ptr = alphabet;
+    while (*ptr) {
+        for (k = 0; key[k] != '\0'; ++k) {
+            if (*ptr == key[k]) {
+                strcpy(ptr, ptr + 1);
+                break;
+            }
+        }
+        ptr++;
+    }
+    ptr = key;
+    while (*ptr) {
+        for (i = 0; i < MATRIX_SIZE; ++i) {
+            for (j = 0; j < MATRIX_SIZE; ++j) {
+                if (*ptr) {
+                    matrix[i][j] = *ptr++;
+                } else {
+                    for (k = 0; k < 26; ++k) {
+                        if (alphabet[k]) {
+                            matrix[i][j] = alphabet[k++];
+                            alphabet[k - 1] = '\0';
+                            break;
+                        }
+                    }
+                }
+            }
+        }
+    }
+}
+void findPosition(char matrix[MATRIX_SIZE][MATRIX_SIZE], char letter, int *row, int *col) {
+    int i, j;
+    for (i = 0; i < MATRIX_SIZE; ++i) {
+        for (j = 0; j < MATRIX_SIZE; ++j) {
+            if (matrix[i][j] == letter) {
+                *row = i;
+                *col = j;
+                return;
+            }
+        }
+    }
+}
+void playfairEncrypt(char matrix[MATRIX_SIZE][MATRIX_SIZE], char a, char b) {
+    int row1, col1, row2, col2;
+
+    findPosition(matrix, a, &row1, &col1);
+    findPosition(matrix, b, &row2, &col2);
+
+    if (row1 == row2) {
+        printf("%c%c ", matrix[row1][(col1 + 1) % MATRIX_SIZE], matrix[row2][(col2 + 1) % MATRIX_SIZE]);
+    } else if (col1 == col2) {
+        printf("%c%c ", matrix[(row1 + 1) % MATRIX_SIZE][col1], matrix[(row2 + 1) % MATRIX_SIZE][col2]);
+    } else {
+        printf("%c%c ", matrix[row1][col2], matrix[row2][col1]);
+    }
+}
+
+ 
+void encryptPlayfair(char matrix[MATRIX_SIZE][MATRIX_SIZE], char *plaintext) {
+    int i;
+    char a, b;
+
+    for (i = 0; plaintext[i] != '\0'; ++i) {
+        if (isalpha(plaintext[i])) {
+            a = toupper(plaintext[i]);
+            b = toupper(plaintext[i + 1]);
+            if (a == 'J')
+                a = 'I';
+            if (b == 'J')
+                b = 'I';
+            if (a == b) {
+                b = 'X';  
+                ++i;
+            }
+            playfairEncrypt(matrix, a, b);
+        }
+    }
+}
+
+int main() {
+    char key[100];
+    char plaintext[100];
+    char matrix[MATRIX_SIZE][MATRIX_SIZE];
+
+    printf("Enter key (no spaces, only uppercase letters, 'J' will be treated as 'I'): ");
+    fgets(key, sizeof(key), stdin);
+    key[strcspn(key, "\n")] = '\0';  
+
+    printf("Enter plaintext: ");
+    fgets(plaintext, sizeof(plaintext), stdin);
+    plaintext[strcspn(plaintext, "\n")] = '\0';  
+
+    generatePlayfairMatrix(key, matrix);
+
+    printf("Encrypted text: ");
+    encryptPlayfair(matrix, plaintext);
+    printf("\n");
+
+    return 0;
+}
