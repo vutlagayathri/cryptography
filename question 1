@@ -1,0 +1,39 @@
+#include <stdio.h>
+#include <string.h>
+#define MAX_LEN 100
+void caesar_cipher(char *message, int key) {
+    int i;
+    char ch;
+
+    for (i = 0; message[i] != '\0'; ++i) {
+        ch = message[i];
+
+        if (ch >= 'a' && ch <= 'z') {
+            ch = 'a' + (ch - 'a' + key) % 26;
+        } else if (ch >= 'A' && ch <= 'Z') {
+            ch = 'A' + (ch - 'A' + key) % 26;
+        }
+
+        message[i] = ch;
+    }
+}
+
+int main() {
+    char message[MAX_LEN];
+    int key, i;
+
+    printf("Enter message to encrypt: ");
+    fgets(message, sizeof(message), stdin);
+    message[strcspn(message, "\n")] = '\0';
+
+    printf("Original message: %s\n", message);
+
+    for (key = 1; key <= 25; ++key) {
+        char encrypted[MAX_LEN];
+        strcpy(encrypted, message);
+        caesar_cipher(encrypted, key);
+        printf("Key: %d, Encrypted message: %s\n", key, encrypted);
+    }
+
+    return 0;
+}
