@@ -1,0 +1,43 @@
+#include <stdio.h>
+#include <string.h>
+#include <ctype.h>
+void decrypt(char *ciphertext, char *plaintext) {
+    char mapping[128];
+    memset(mapping, 0, sizeof(mapping));
+    mapping['5'] = 't';
+    mapping['3'] = 'h';
+    mapping['0'] = 'e';
+    mapping['6'] = 'a';
+    mapping['8'] = 's';
+    mapping['4'] = 'o';
+    mapping['9'] = 'n';
+    mapping['2'] = 'i';
+    mapping['1'] = 'd';
+    mapping['('] = 'r';
+    mapping[')'] = 'l';
+    mapping[';'] = 'c';
+    mapping[':'] = 'u';
+    mapping['—'] = 'g';
+    mapping['?'] = 'y';
+    mapping['['] = 'f';
+    mapping[']'] = 'm';
+    mapping['*'] = 'w';
+    mapping['¶'] = 'p';
+    mapping['4'] = 'o';
+    for (int i = 0; ciphertext[i] != '\0'; i++) {
+        plaintext[i] = mapping[ciphertext[i]];
+        if (!plaintext[i]) {
+            plaintext[i] = ciphertext[i]; // 
+        }
+    }
+}
+int main() {
+    char ciphertext[] = "53‡‡†305))6*;4826)4‡.)4‡);806*;48†8¶60))85;;]8*;:‡*8†83(88)5*†;46(;88*96*?;8)*‡(;485);5*†2:*‡(;4956*2(5*—4)8¶8*;4069285);)6†8)4‡‡;1(‡9;48081;8:8‡1;48†85;4)485†528806*81(‡9;48;(88;4(‡?34;48)4‡;161;:188;‡?";
+    char plaintext[1000];
+
+    decrypt(ciphertext, plaintext);
+
+    printf("Decrypted plaintext: %s\n", plaintext);
+
+    return 0;
+}
