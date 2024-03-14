@@ -1,0 +1,86 @@
+#include <stdio.h>
+#include <string.h>
+#include <ctype.h>
+
+ 
+void decryptPlayfair(char *ciphertext, char *keyword, char *plaintext) {
+     
+    char matrix[5][5];
+
+     
+    int matrixIndex = 0;
+    int keywordLength = strlen(keyword);
+    int used[26] = {0};  
+    for (int i = 0; i < keywordLength; i++) {
+        char ch = toupper(keyword[i]);
+        if (ch == 'J') ch = 'I';  
+        if (isalpha(ch) && !used[ch - 'A']) {
+            matrix[matrixIndex / 5][matrixIndex % 5] = ch;
+            used[ch - 'A'] = 1;  
+            matrixIndex++;
+        }
+    }
+
+     
+    for (char ch = 'A'; ch <= 'Z'; ch++) {
+        if (ch != 'J' && !used[ch - 'A']) {
+            matrix[matrixIndex / 5][matrixIndex % 5] = ch;
+            used[ch - 'A'] = 1;  
+            matrixIndex++;
+        }
+    }
+
+     
+    int len = strlen(ciphertext);
+    for (int i = 0; i < len; i += 2) {
+        char ch1 = toupper(ciphertext[i]);
+        char ch2 = toupper(ciphertext[i + 1]);
+        if (ch1 == ch2) {
+             
+            ch2 = 'X';
+            i--;  
+        }
+
+        int row1, col1, row2, col2;
+        for (int row = 0; row < 5; row++) {
+            for (int col = 0; col < 5; col++) {
+                if (matrix[row][col] == ch1) {
+                    row1 = row;
+                    col1 = col;
+                }
+                if (matrix[row][col] == ch2) {
+                    row2 = row;
+                    col2 = col;
+                }
+            }
+        }
+
+        
+        if (row1 == row2) {
+            
+            plaintext[i] = matrix[row1][(col1 - 1 + 5) % 5];
+            plaintext[i + 1] = matrix[row2][(col2 - 1 + 5) % 5];
+        } else if (col1 == col2) {
+            
+            plaintext[i] = matrix[(row1 - 1 + 5) % 5][col1];
+            plaintext[i + 1] = matrix[(row2 - 1 + 5) % 5][col2];
+        } else {
+             
+            plaintext[i] = matrix[row1][col2];
+            plaintext[i + 1] = matrix[row2][col1];
+        }
+    }
+
+    plaintext[len] = '\0';  
+}
+
+int main() {
+    char ciphertext[] = "KXJEYUREBEZWEHEWRYTUHEYFSKREHEGOYFIWTTTUOLKSYCAJPOBOTEIZONTXBYBNTGONEYCUZWRGDSONSXBOUYWRHEBAAHYUSEDQ";
+    char keyword[] = "PT109";  
+    char plaintext[1000];  
+    decryptPlayfair(ciphertext, keyword, plaintext);
+
+    printf("Plaintext: %s\n", plaintext);
+
+    return 0;
+}
