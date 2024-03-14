@@ -1,0 +1,56 @@
+#include <stdio.h>
+#include <string.h>
+#include <ctype.h>
+void generateCipherSequence(char *keyword, char *cipherSequence) {
+    int keywordLength = strlen(keyword);
+    int used[26] = {0}; 
+    int alphabetIndex = 0;
+
+    
+    for (int i = 0; i < keywordLength; i++) {
+        char ch = toupper(keyword[i]);
+        if (ch >= 'A' && ch <= 'Z' && !used[ch - 'A']) {
+            cipherSequence[alphabetIndex++] = ch;
+            used[ch - 'A'] = 1;  
+        }
+    }
+
+     
+    for (int i = 0; i < 26; i++) {
+        if (!used[i]) {
+            cipherSequence[alphabetIndex++] = 'A' + i;
+        }
+    }
+
+    cipherSequence[26] = '\0';  
+}
+
+ 
+void encryptMonoalphabetic(char *plaintext, char *ciphertext, char *cipherSequence) {
+    int len = strlen(plaintext);
+    for (int i = 0; i < len; i++) {
+        char ch = toupper(plaintext[i]);
+        if (ch >= 'A' && ch <= 'Z') {
+            ciphertext[i] = cipherSequence[ch - 'A'];
+        } else {
+            ciphertext[i] = ch;  
+        }
+    }
+    ciphertext[len] = '\0';  
+}
+
+int main() {
+    char keyword[] = "CIPHER";
+    char plaintext[] = "HELLO WORLD";
+    char cipherSequence[27];
+    char ciphertext[100];  
+
+    
+    generateCipherSequence(keyword, cipherSequence);
+ 
+    encryptMonoalphabetic(plaintext, ciphertext, cipherSequence);
+
+    printf("Ciphertext: %s\n", ciphertext);
+
+    return 0;
+}
