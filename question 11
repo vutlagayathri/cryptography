@@ -1,0 +1,32 @@
+#include <stdio.h>
+
+long long factorial(int n) {
+    long long result = 1;
+    for (int i = 1; i <= n; i++) {
+        result *= i;
+    }
+    return result;
+}
+
+long long calculateTotalKeys() {
+    return factorial(25) * 25;
+}
+
+long long calculateEffectiveUniqueKeys(int keywordLength) {
+    long long totalKeys = calculateTotalKeys();
+    long long numSwaps = (long long)keywordLength * (keywordLength - 1) / 2;
+    return totalKeys / numSwaps;
+}
+
+int main() {
+
+    long long totalKeys = calculateTotalKeys();
+    printf("Total number of possible keys: %lld\n", totalKeys);
+
+
+    int keywordLength = 5; 
+    long long effectiveUniqueKeys = calculateEffectiveUniqueKeys(keywordLength);
+    printf("Effective number of unique keys for keyword length %d: %lld\n", keywordLength, effectiveUniqueKeys);
+
+    return 0;
+}
