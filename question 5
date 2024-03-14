@@ -1,0 +1,59 @@
+#include <stdio.h>
+#include <stdlib.h>
+#include <string.h>
+#include <ctype.h>
+int gcd(int a, int b) {
+    if (b == 0)
+        return a;
+    return gcd(b, a % b);
+}
+int isRelativelyPrime(int a, int b) {
+    return gcd(a, b) == 1;
+}
+char encrypt(char p, int a, int b) {
+    if (isalpha(p)) {
+        int offset = isupper(p) ? 'A' : 'a';
+        return ((a * (p - offset)) + b) % 26 + offset;
+    }
+    return p;
+}
+int main() {
+    char plaintext[100], ciphertext[100];
+    int a, b;
+
+    printf("Enter plaintext: ");
+    fgets(plaintext, sizeof(plaintext), stdin);
+
+    plaintext[strcspn(plaintext, "\n")] = '\0';
+
+     
+    printf("Enter value of 'a' (should be relatively prime to 26): ");
+    scanf("%d", &a);
+
+     
+    if (!isRelativelyPrime(a, 26)) {
+        printf("Error: 'a' is not relatively prime to 26.\n");
+        return 1;
+    }
+
+     
+    printf("Enter value of 'b' (should be between 0 and 25): ");
+    scanf("%d", &b);
+
+
+    if (b < 0 || b > 25) {
+        printf("Error: 'b' should be between 0 and 25.\n");
+        return 1;
+    }
+
+     
+    int i;
+    for (i = 0; plaintext[i] != '\0'; ++i) {
+        ciphertext[i] = encrypt(plaintext[i], a, b);
+    }
+    ciphertext[i] = '\0';
+
+    printf("Ciphertext: %s\n", ciphertext);
+
+    return 0;
+}
