@@ -1,0 +1,53 @@
+#include <stdio.h>
+#include <string.h>
+#include <ctype.h>
+
+#define ALPHABET_SIZE 26
+
+ 
+void monoalphabetic_substitution(char *plaintext, char *ciphertext, char *key) {
+    int i;
+    char table[ALPHABET_SIZE];
+
+   
+    for (i = 0; i < ALPHABET_SIZE; ++i) {
+        table[i] = key[i % strlen(key)];
+    }
+
+     
+    for (i = 0; plaintext[i] != '\0'; ++i) {
+        if (isalpha(plaintext[i])) {
+            char ch = toupper(plaintext[i]);  
+
+            if (isupper(ch)) {
+                ciphertext[i] = table[ch - 'A'];
+            } else {
+                ciphertext[i] = tolower(table[ch - 'a']);
+            }
+        } else {
+            ciphertext[i] = plaintext[i];  
+        }
+    }
+
+    ciphertext[i] = '\0';  
+}
+
+int main() {
+    char plaintext[100];
+    char key[100];
+    char ciphertext[100];
+
+    printf("Enter plaintext: ");
+    fgets(plaintext, sizeof(plaintext), stdin);
+    plaintext[strcspn(plaintext, "\n")] = '\0';  
+
+    printf("Enter key: ");
+    fgets(key, sizeof(key), stdin);
+    key[strcspn(key, "\n")] = '\0';  
+
+    monoalphabetic_substitution(plaintext, ciphertext, key);
+
+    printf("Ciphertext: %s\n", ciphertext);
+
+    return 0;
+}
