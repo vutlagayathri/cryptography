@@ -1,0 +1,57 @@
+#include <stdio.h>
+#include <string.h>
+#include <ctype.h>
+#define ALPHABET_SIZE 26
+int gcd(int a, int b) {
+    if (b == 0)
+        return a;
+    return gcd(b, a % b);
+}
+int modInverse(int a, int m) {
+    for (int x = 1; x < m; x++)
+        if (((a % m) * (x % m)) % m == 1)
+            return x;
+    return -1;
+}
+char decrypt(char c, int a, int b) {
+    if (isalpha(c)) {
+        int offset = isupper(c) ? 'A' : 'a';
+        int inverse = modInverse(a, ALPHABET_SIZE);
+        return ((inverse * ((c - offset) - b + ALPHABET_SIZE)) % ALPHABET_SIZE) + offset;
+    }
+    return c;
+}
+void countLetters(char *ciphertext, int *count) {
+    for (int i = 0; ciphertext[i] != '\0'; i++) {
+        if (isalpha(ciphertext[i])) {
+            int index = toupper(ciphertext[i]) - 'A';
+            count[index]++;
+        }
+    }
+}
+int findMostFrequent(int *count) {
+    int maxIndex = 0;
+    for (int i = 1; i < ALPHABET_SIZE; i++) {
+        if (count[i] > count[maxIndex]) {
+            maxIndex = i;
+        }
+    }
+    return maxIndex;
+}
+int main() {
+    char ciphertext[] = "BUABCDUBCDEBBUU"; // Example ciphertext
+    int count[ALPHABET_SIZE] = {0};  
+    countLetters(ciphertext, count);
+    int mostFrequentIndex = findMostFrequent(count);
+    int a = (mostFrequentIndex - ('E' - 'A')) % ALPHABET_SIZE;
+    if (a < 0) a += ALPHABET_SIZE;
+    int b = ('B' - 'A' - (a * ('U' - 'A'))) % ALPHABET_SIZE;
+    if (b < 0) b += ALPHABET_SIZE;
+    printf("Decryption key: a = %d, b = %d\n", a, b);
+    printf("Decrypted plaintext: ");
+    for (int i = 0; ciphertext[i] != '\0'; i++) {
+        printf("%c", decrypt(ciphertext[i], a, b));
+    }
+    printf("\n");
+    return 0;
+}
