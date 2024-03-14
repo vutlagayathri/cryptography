@@ -1,0 +1,66 @@
+#include <stdio.h>
+#include <string.h>
+#include <stdlib.h>
+#include <time.h>
+#include <ctype.h>
+
+#define ALPHABET_SIZE 26
+
+ 
+void shuffle(char *array, int n) {
+    if (n > 1) {
+        int i;
+        for (i = 0; i < n - 1; ++i) {
+            int j = i + rand() / (RAND_MAX / (n - i) + 1);
+            char temp = array[j];
+            array[j] = array[i];
+            array[i] = temp;
+        }
+    }
+}
+
+ 
+void monoalphabetic_substitution_unique(char *plaintext, char *ciphertext) {
+    char table[ALPHABET_SIZE];
+    int i;
+
+    
+    for (i = 0; i < ALPHABET_SIZE; ++i) {
+        table[i] = 'A' + i;  
+    }
+
+     
+    srand(time(NULL));
+    shuffle(table, ALPHABET_SIZE);
+
+     
+    for (i = 0; plaintext[i] != '\0'; ++i) {
+        if (isalpha(plaintext[i])) {
+            char ch = toupper(plaintext[i]);  
+
+            if (isupper(ch)) {
+                ciphertext[i] = table[ch - 'A'];
+            } else {
+                ciphertext[i] = tolower(table[ch - 'a']);
+            }
+        } else {
+            ciphertext[i] = plaintext[i]; //  
+        }
+    }
+
+    ciphertext[i] = '\0';  
+}
+
+int main() {
+    char plaintext[100];
+    char ciphertext[100];
+
+    printf("Enter plaintext: ");
+    fgets(plaintext, sizeof(plaintext), stdin);
+    plaintext[strcspn(plaintext, "\n")] = '\0';  
+    monoalphabetic_substitution_unique(plaintext, ciphertext);
+
+    printf("Ciphertext: %s\n", ciphertext);
+
+    return 0;
+}
