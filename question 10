@@ -1,0 +1,93 @@
+#include <stdio.h>
+#include <string.h>
+#include <ctype.h>
+
+void createPlayfairMatrix(char *key, char matrix[5][5]) {
+    
+    int keyLen = strlen(key);
+    int row = 0, col = 0;
+    int used[26] = {0}; 
+    for (int i = 0; i < keyLen; i++) {
+        char ch = toupper(key[i]);
+        if (ch == 'J') ch = 'I'; 
+        if (!used[ch - 'A']) {
+            matrix[row][col] = ch;
+            used[ch - 'A'] = 1;
+            col++;
+            if (col == 5) {
+                col = 0;
+                row++;
+            }
+        }
+    }
+    
+    for (char ch = 'A'; ch <= 'Z'; ch++) {
+        if (ch == 'J') continue; 
+        if (!used[ch - 'A']) {
+            matrix[row][col] = ch;
+            col++;
+            if (col == 5) {
+                col = 0;
+                row++;
+            }
+        }
+    }
+}
+
+
+void findPositions(char matrix[5][5], char ch, int *row, int *col) {
+    if (ch == 'J') ch = 'I'; 
+    for (int i = 0; i < 5; i++) {
+        for (int j = 0; j < 5; j++) {
+            if (matrix[i][j] == ch) {
+                *row = i;
+                *col = j;
+                return;
+            }
+        }
+    }
+}
+
+
+void encryptPlayfair(char *plaintext, char matrix[5][5], char *ciphertext) {
+    int len = strlen(plaintext);
+    int index = 0;
+    for (int i = 0; i < len; i += 2) {
+        char ch1 = plaintext[i];
+        char ch2 = (plaintext[i + 1] == '\0') ? 'X' : plaintext[i + 1]; 
+        int row1, col1, row2, col2;
+        findPositions(matrix, ch1, &row1, &col1);
+        findPositions(matrix, ch2, &row2, &col2);
+        if (row1 == row2) {
+            
+            ciphertext[index++] = matrix[row1][(col1 + 1) % 5];
+            ciphertext[index++] = matrix[row2][(col2 + 1) % 5];
+        } else if (col1 == col2) {
+            
+            ciphertext[index++] = matrix[(row1 + 1) % 5][col1];
+            ciphertext[index++] = matrix[(row2 + 1) % 5][col2];
+        } else {
+            
+            ciphertext[index++] = matrix[row1][col2];
+            ciphertext[index++] = matrix[row2][col1];
+        }
+    }
+    ciphertext[index] = '\0'; 
+}
+
+int main() {
+    char key[] = "MFHIJK";
+    char plaintext[] = "MUSTSEEYOUOVERCADOGANWESTCOMINGATONCE";
+    char matrix[5][5];
+    char ciphertext[1000];
+
+    
+    createPlayfairMatrix(key, matrix);
+
+    
+    encryptPlayfair(plaintext, matrix, ciphertext);
+
+    printf("Ciphertext: %s\n", ciphertext);
+
+    return 0;
+}
