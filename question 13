@@ -1,0 +1,51 @@
+#include <stdio.h>
+#include <stdlib.h>
+#include <string.h>
+
+#define MAX_SIZE 100
+
+int determinant(int a, int b, int c, int d) {
+    return a * d - b * c;
+}
+void inverse(int key[2][2], int inv_key[2][2]) {
+    int det = determinant(key[0][0], key[0][1], key[1][0], key[1][1]);
+    int temp = key[0][0];
+    key[0][0] = key[1][1];
+    key[1][1] = temp;
+    key[0][1] = -key[0][1];
+    key[1][0] = -key[1][0];
+    for (int i = 0; i < 2; i++) {
+        for (int j = 0; j < 2; j++) {
+            inv_key[i][j] = (key[i][j] * (1.0 / det));
+        }
+    }
+}
+
+void decrypt(char *ciphertext, char *plaintext, int key[2][2]) {
+    int inv_key[2][2];n
+    inverse(key, inv_key);
+    int len = strlen(ciphertext);
+    for (int i = 0; i < len; i += 2) {
+        int x = ciphertext[i] - 'A';
+        int y = ciphertext[i + 1] - 'A';
+        int p = (inv_key[0][0] * x + inv_key[0][1] * y) + 0.5;
+        int q = (inv_key[1][0] * x + inv_key[1][1] * y) + 0.5;
+        plaintext[i] = p % 26 + 'A';
+        plaintext[i + 1] = q % 26 + 'A';
+    }
+    plaintext[len] = '\0';
+}
+
+int main() {
+    char ciphertext[MAX_SIZE];
+    char plaintext[MAX_SIZE];
+    int key[2][2] = {{3, 2}, {5, 7}}; 
+
+    printf("Enter the ciphertext: ");
+    fgets(ciphertext, sizeof(ciphertext), stdin);
+
+    decrypt(ciphertext, plaintext, key);
+    printf("Decrypted plaintext: %s\n", plaintext);
+
+    return 0;
+}
