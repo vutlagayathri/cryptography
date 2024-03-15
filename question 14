@@ -1,0 +1,54 @@
+#include <stdio.h>
+#include <string.h>
+#include <ctype.h>
+#define MAX_SIZE 100
+void encrypt(char *plaintext, char *key, char *ciphertext) {
+    int len = strlen(plaintext);
+    int key_len = strlen(key);
+    for (int i = 0; i < len; i++) {
+        if (isalpha(plaintext[i])) {
+            int shift = key[i % key_len] - 'A'; 
+            char base = isupper(plaintext[i]) ? 'A' : 'a';
+            ciphertext[i] = (plaintext[i] - base + shift) % 26 + base;
+        } else {
+            ciphertext[i] = plaintext[i]; 
+        }
+    }
+    ciphertext[len] = '\0';
+}
+void decrypt(char *ciphertext, char *key, char *plaintext) {
+    int len = strlen(ciphertext);
+    int key_len = strlen(key);
+    for (int i = 0; i < len; i++) {
+        if (isalpha(ciphertext[i])) {
+            int shift = key[i % key_len] - 'A'; 
+            char base = isupper(ciphertext[i]) ? 'A' : 'a';
+            plaintext[i] = (ciphertext[i] - base - shift + 26) % 26 + base;
+        } else {
+            plaintext[i] = ciphertext[i]; 
+        }
+    }
+    plaintext[len] = '\0';
+}
+int main() {
+    char plaintext[MAX_SIZE] = "sendmoremoney";
+    char key[MAX_SIZE] = {9, 0, 1, 7, 23, 15, 21, 14, 11, 11, 2, 8, 9};
+    char ciphertext[MAX_SIZE];
+    encrypt(plaintext, key, ciphertext);
+    printf("Encrypted ciphertext: %s\n", ciphertext);
+    char decrypted_plaintext[MAX_SIZE];
+    decrypt(ciphertext, key, decrypted_plaintext);
+    printf("Decrypted plaintext: %s\n", decrypted_plaintext);
+    char target[] = "cashnotneeded";
+    char found_key[MAX_SIZE];
+    for (int i = 0; i < strlen(ciphertext); i++) {
+        int shift = (ciphertext[i] - plaintext[i] + 26) % 26;
+        found_key[i] = shift + 'A';
+    }
+    found_key[strlen(ciphertext)] = '\0';
+    printf("Found key: %s\n", found_key);
+    char decrypted_plaintext_with_found_key[MAX_SIZE];
+    decrypt(ciphertext, found_key, decrypted_plaintext_with_found_key);
+    printf("Decrypted plaintext with found key: %s\n", decrypted_plaintext_with_found_key);
+    return 0;
+}
